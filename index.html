@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Burn Widget</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .widget {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .total-amount {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            color: #718096;
+            font-size: 1.1em;
+        }
+        
+        .progress-container {
+            position: relative;
+            height: 40px;
+            background: #e2e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #48bb78, #38a169, #f56565, #e53e3e);
+            border-radius: 20px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+        
+        .flame-effect {
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ff6b35, #f7931e, #ffcc02);
+            border-radius: 50%;
+            animation: flicker 0.5s infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { 
+                transform: translateY(-50%) scale(0.8);
+                opacity: 0.8;
+            }
+            100% { 
+                transform: translateY(-50%) scale(1.2);
+                opacity: 1;
+            }
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        
+        .stat {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .stat-label {
+            color: #718096;
+            margin-top: 5px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #4299e1;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3182ce;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+        
+        .day-input {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1em;
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget">
+        <div class="header">
+            <div class="total-amount">₹25,000</div>
+            <div class="subtitle">365 Day Budget Burn</div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">
+                <div class="flame-effect" id="flame"></div>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="currentDay">1</div>
+                <div class="stat-label">Current Day</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="dailyBurn">₹68.49</div>
+                <div class="stat-label">Daily Burn</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="totalBurned">₹68.49</div>
+                <div class="stat-label">Total Burned</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="remaining">₹24,931.51</div>
+                <div class="stat-label">Remaining</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <input type="number" class="day-input" id="dayInput" value="1" min="1" max="365">
+            <button class="btn-primary" onclick="goToDay()">Go to Day</button>
+            <button class="btn-secondary" onclick="nextDay()">Next Day</button>
+            <button class="btn-secondary" onclick="prevDay()">Prev Day</button>
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        let currentDay = 1;
+        const totalBudget = 25000;
+        const dailyBurn = totalBudget / 365;
+
+        function updateWidget() {
+            const progressPercent = (currentDay / 365) * 100;
+            const totalBurned = currentDay * dailyBurn;
+            const remaining = totalBudget - totalBurned;
+            
+            document.getElementById('progressBar').style.width = progressPercent + '%';
+            document.getElementById('currentDay').textContent = currentDay;
+            document.getElementById('totalBurned').textContent = '₹' + totalBurned.toFixed(2);
+            document.getElementById('remaining').textContent = '₹' + remaining.toFixed(2);
+            document.getElementById('dayInput').value = currentDay;
+            
+            // Hide flame if budget is fully burned
+            const flame = document.getElementById('flame');
+            if (currentDay >= 365) {
+                flame.style.display = 'none';
+            } else {
+                flame.style.display = 'block';
+            }
+        }
+
+        function nextDay() {
+            if (currentDay < 365) {
+                currentDay++;
+                updateWidget();
+            }
+        }
+
+        function prevDay() {
+            if (currentDay > 1) {
+                currentDay--;
+                updateWidget();
+            }
+        }
+
+        function goToDay() {
+            const inputDay = parseInt(document.getElementById('dayInput').value);
+            if (inputDay >= 1 && inputDay <= 365) {
+                currentDay = inputDay;
+                updateWidget();
+            }
+        }
+
+        function reset() {
+            currentDay = 1;
+            updateWidget();
+        }
+
+        // Auto-increment every 3 seconds for demo
+        setInterval(() => {
+            if (currentDay < 365) {
+                nextDay();
+            }
+        }, 3000);
+
+        // Initialize
+        updateWidget();
+    </script>
+</body>
+</html>
