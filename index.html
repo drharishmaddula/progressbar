@@ -190,11 +190,28 @@
     </div>
 
     <script>
-        let currentDay = 1;
+        // Budget period: July 9, 2025 to July 8, 2026
+        const startDate = new Date('2025-07-09');
+        const endDate = new Date('2026-07-08');
         const totalBudget = 25000;
         const dailyBurn = totalBudget / 365;
 
+        function getCurrentDay() {
+            const today = new Date();
+            const timeDiff = today - startDate;
+            const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff < 0) {
+                return 0; // Before start date
+            } else if (daysDiff > 365) {
+                return 365; // After end date
+            } else {
+                return daysDiff + 1; // Day 1 is July 9, 2025
+            }
+        }
+
         function updateWidget() {
+            const currentDay = getCurrentDay();
             const progressPercent = (currentDay / 365) * 100;
             const totalBurned = currentDay * dailyBurn;
             const remaining = totalBudget - totalBurned;
@@ -205,9 +222,9 @@
             document.getElementById('remaining').textContent = '₹' + remaining.toFixed(2);
             document.getElementById('dayInput').value = currentDay;
             
-            // Hide flame if budget is fully burned
+            // Hide flame if budget is fully burned or not started
             const flame = document.getElementById('flame');
-            if (currentDay >= 365) {
+            if (currentDay >= 365 || currentDay === 0) {
                 flame.style.display = 'none';
             } else {
                 flame.style.display = 'block';
@@ -215,38 +232,27 @@
         }
 
         function nextDay() {
-            if (currentDay < 365) {
-                currentDay++;
-                updateWidget();
-            }
+            // For manual testing only - disabled for real-time mode
+            console.log('Manual controls disabled in real-time mode');
         }
 
         function prevDay() {
-            if (currentDay > 1) {
-                currentDay--;
-                updateWidget();
-            }
+            // For manual testing only - disabled for real-time mode
+            console.log('Manual controls disabled in real-time mode');
         }
 
         function goToDay() {
-            const inputDay = parseInt(document.getElementById('dayInput').value);
-            if (inputDay >= 1 && inputDay <= 365) {
-                currentDay = inputDay;
-                updateWidget();
-            }
+            // For manual testing only - disabled for real-time mode
+            console.log('Manual controls disabled in real-time mode');
         }
 
         function reset() {
-            currentDay = 1;
+            // Just refresh the current day
             updateWidget();
         }
 
-        // Auto-increment every 3 seconds for demo
-        setInterval(() => {
-            if (currentDay < 365) {
-                nextDay();
-            }
-        }, 3000);
+        // Update every hour to ensure accuracy
+        setInterval(updateWidget, 3600000); // 1 hour = 3600000 milliseconds
 
         // Initialize
         updateWidget();
