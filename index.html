@@ -3,77 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Budget Burn Widget</title>
+    <title>Fitness Dashboard</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-            margin: 0;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            overflow-x: hidden;
-            box-sizing: border-box;
-        }
-        
-        .widget {
-            background: white;
-            border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            max-width: 100%;
-            width: 100%;
-            box-sizing: border-box;
+            overflow-x: hidden;
         }
-        
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
         .header {
             text-align: center;
+            color: white;
             margin-bottom: 30px;
         }
-        
-        .total-amount {
+
+        .header h1 {
             font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+
+        .card-title {
+            font-size: 1.3em;
             font-weight: bold;
             color: #2d3748;
-            margin-bottom: 5px;
         }
-        
-        .subtitle {
+
+        .card-subtitle {
             color: #718096;
-            font-size: 1.1em;
+            font-size: 0.9em;
         }
-        
+
         .progress-container {
             position: relative;
-            height: 40px;
+            height: 20px;
             background: #e2e8f0;
-            border-radius: 20px;
+            border-radius: 10px;
             overflow: hidden;
-            margin: 20px 0;
+            margin: 15px 0;
         }
-        
+
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #48bb78, #38a169, #f56565, #e53e3e);
-            border-radius: 20px;
-            transition: width 0.3s ease;
+            border-radius: 10px;
+            transition: width 0.5s ease;
             position: relative;
         }
-        
+
+        .gym-progress {
+            background: linear-gradient(90deg, #48bb78, #38a169, #f56565, #e53e3e);
+        }
+
+        .mood-progress {
+            background: linear-gradient(90deg, #e53e3e, #f6ad55, #48bb78);
+        }
+
+        .weight-progress {
+            background: linear-gradient(90deg, #4299e1, #3182ce, #2b6cb0);
+        }
+
+        .calorie-progress {
+            background: linear-gradient(90deg, #ed8936, #dd6b20, #c05621);
+        }
+
+        .workout-progress {
+            background: linear-gradient(90deg, #805ad5, #6b46c1, #553c9a);
+        }
+
         .flame-effect {
             position: absolute;
-            right: -10px;
+            right: -8px;
             top: 50%;
             transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             background: radial-gradient(circle, #ff6b35, #f7931e, #ffcc02);
             border-radius: 50%;
             animation: flicker 0.5s infinite alternate;
         }
-        
+
         @keyframes flicker {
             0% { 
                 transform: translateY(-50%) scale(0.8);
@@ -84,43 +143,52 @@
                 opacity: 1;
             }
         }
-        
+
         .stats {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
-            font-size: 0.9em;
+            margin: 15px 0;
             flex-wrap: wrap;
             gap: 10px;
         }
-        
+
         .stat {
             text-align: center;
             flex: 1;
-            min-width: 80px;
+            min-width: 70px;
         }
-        
+
         .stat-value {
             font-size: 1.2em;
             font-weight: bold;
             color: #2d3748;
             word-break: break-word;
         }
-        
+
         .stat-label {
             color: #718096;
+            font-size: 0.8em;
             margin-top: 5px;
         }
-        
-        .controls {
+
+        .input-group {
             display: flex;
-            gap: 8px;
-            margin-top: 20px;
-            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
             flex-wrap: wrap;
+            align-items: center;
         }
-        
-        button {
+
+        .input-field {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.9em;
+            flex: 1;
+            min-width: 60px;
+        }
+
+        .btn {
             padding: 8px 16px;
             border: none;
             border-radius: 6px;
@@ -129,147 +197,556 @@
             transition: all 0.2s;
             font-size: 0.9em;
         }
-        
+
         .btn-primary {
             background: #4299e1;
             color: white;
         }
-        
+
         .btn-primary:hover {
             background: #3182ce;
         }
-        
-        .btn-secondary {
-            background: #e2e8f0;
-            color: #4a5568;
+
+        .mood-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
         }
-        
-        .btn-secondary:hover {
-            background: #cbd5e0;
+
+        .mood-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.5em;
+            text-align: center;
         }
-        
-        .day-input {
-            padding: 8px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
+
+        .mood-btn.good {
+            background: #c6f6d5;
+            border-color: #48bb78;
+        }
+
+        .mood-btn.okay {
+            background: #fef5e7;
+            border-color: #f6ad55;
+        }
+
+        .mood-btn.bad {
+            background: #fed7d7;
+            border-color: #e53e3e;
+        }
+
+        .mood-btn.selected {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .workout-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .summary-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .summary-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .summary-label {
+            color: #718096;
             font-size: 0.9em;
-            width: 60px;
-            box-sizing: border-box;
         }
-        
-        * {
-            box-sizing: border-box;
+
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .card {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="widget">
+    <div class="dashboard">
         <div class="header">
-            <div class="total-amount">₹25,000</div>
-            <div class="subtitle">Workout Progress - 365 Days </div>
+            <h1>💪 Fitness Journey Dashboard</h1>
+            <p>Your 365-day transformation tracker</p>
         </div>
-        
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar">
-                <div class="flame-effect" id="flame"></div>
+
+        <div class="cards-container">
+            <!-- Gym Investment Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">💰</div>
+                    <div>
+                        <div class="card-title">Gym Investment</div>
+                        <div class="card-subtitle">₹25,000 • 365 Days</div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar gym-progress" id="gymProgress">
+                        <div class="flame-effect" id="gymFlame"></div>
+                    </div>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="gymDay">4</div>
+                        <div class="stat-label">Day</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="gymSpent">₹274</div>
+                        <div class="stat-label">Spent</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="gymRemaining">₹24,726</div>
+                        <div class="stat-label">Remaining</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Mood Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">😊</div>
+                    <div>
+                        <div class="card-title">Daily Mood</div>
+                        <div class="card-subtitle">How are you feeling today?</div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar mood-progress" id="moodProgress"></div>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="moodGood">0</div>
+                        <div class="stat-label">Great Days</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="moodOkay">0</div>
+                        <div class="stat-label">Okay Days</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="moodBad">0</div>
+                        <div class="stat-label">Tough Days</div>
+                    </div>
+                </div>
+                <div class="mood-buttons">
+                    <div class="mood-btn good" onclick="setMood('good')">🟢 Great</div>
+                    <div class="mood-btn okay" onclick="setMood('okay')">🟡 Okay</div>
+                    <div class="mood-btn bad" onclick="setMood('bad')">🔴 Tough</div>
+                </div>
+            </div>
+
+            <!-- Weekly Weight Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">⚖️</div>
+                    <div>
+                        <div class="card-title">Weekly Weight</div>
+                        <div class="card-subtitle">Monday weigh-ins • 52 weeks</div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar weight-progress" id="weightProgress"></div>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="weightWeek">1</div>
+                        <div class="stat-label">Week</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="currentWeight">--</div>
+                        <div class="stat-label">Current (kg)</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="weightChange">--</div>
+                        <div class="stat-label">Change</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="number" class="input-field" id="weightInput" placeholder="Weight (kg)" step="0.1">
+                    <button class="btn btn-primary" onclick="updateWeight()">Update</button>
+                </div>
+            </div>
+
+            <!-- Daily Calories Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🍎</div>
+                    <div>
+                        <div class="card-title">Daily Calories</div>
+                        <div class="card-subtitle">Target: 2000 calories</div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar calorie-progress" id="calorieProgress"></div>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="calorieTarget">2000</div>
+                        <div class="stat-label">Target</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="calorieActual">0</div>
+                        <div class="stat-label">Actual</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="calorieStatus">0%</div>
+                        <div class="stat-label">Progress</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="number" class="input-field" id="calorieInput" placeholder="Calories today">
+                    <button class="btn btn-primary" onclick="updateCalories()">Update</button>
+                </div>
+            </div>
+
+            <!-- Workout Days Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">💪</div>
+                    <div>
+                        <div class="card-title">Workout Days</div>
+                        <div class="card-subtitle">Days completed vs missed</div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar workout-progress" id="workoutProgress"></div>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="workoutCompleted">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="workoutStreak">0</div>
+                        <div class="stat-label">Streak</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="workoutPercent">0%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                </div>
+                <div class="workout-checkbox">
+                    <input type="checkbox" class="checkbox" id="workoutCheck" onchange="updateWorkout()">
+                    <label for="workoutCheck">Did you workout today?</label>
+                </div>
             </div>
         </div>
-        
-        <div class="stats">
-            <div class="stat">
-                <div class="stat-value" id="currentDay">1</div>
-                <div class="stat-label">Current Day</div>
+
+        <div class="summary-stats">
+            <div class="summary-card">
+                <div class="summary-value" id="totalDays">4</div>
+                <div class="summary-label">Days Into Journey</div>
             </div>
-            <div class="stat">
-                <div class="stat-value" id="dailyBurn">₹68.49</div>
-                <div class="stat-label">Daily Burn</div>
+            <div class="summary-card">
+                <div class="summary-value" id="overallProgress">1%</div>
+                <div class="summary-label">Overall Progress</div>
             </div>
-            <div class="stat">
-                <div class="stat-value" id="totalBurned">₹68.49</div>
-                <div class="stat-label">Total Burned</div>
+            <div class="summary-card">
+                <div class="summary-value" id="motivationScore">85</div>
+                <div class="summary-label">Motivation Score</div>
             </div>
-            <div class="stat">
-                <div class="stat-value" id="remaining">₹24,931.51</div>
-                <div class="stat-label">Remaining</div>
-            </div>
-        </div>
-        
-        <div class="controls">
-            <input type="number" class="day-input" id="dayInput" value="1" min="1" max="365">
-            <button class="btn-primary" onclick="goToDay()">Go to Day</button>
-            <button class="btn-secondary" onclick="nextDay()">Next Day</button>
-            <button class="btn-secondary" onclick="prevDay()">Prev Day</button>
-            <button class="btn-secondary" onclick="reset()">Reset</button>
         </div>
     </div>
 
     <script>
-        // Budget period: July 9, 2025 to July 8, 2026
+        // Journey starts July 9, 2025
         const startDate = new Date('2025-07-09');
-        const endDate = new Date('2026-07-08');
-        const totalBudget = 25000;
-        const dailyBurn = totalBudget / 365;
+        const totalDays = 365;
+        const gymBudget = 25000;
+        const dailyBurn = gymBudget / totalDays;
+        const calorieTarget = 2000;
 
+        // Initialize data storage
+        let fitnessData = {
+            moods: {},
+            weights: {},
+            calories: {},
+            workouts: {},
+            startWeight: null
+        };
+
+        // Load data from localStorage (simulated storage)
+        function loadData() {
+            const stored = localStorage.getItem('fitnessData');
+            if (stored) {
+                fitnessData = JSON.parse(stored);
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('fitnessData', JSON.stringify(fitnessData));
+        }
+
+        // Get current day
         function getCurrentDay() {
             const today = new Date();
             const timeDiff = today - startDate;
             const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
             
-            if (daysDiff < 0) {
-                return 0; // Before start date
-            } else if (daysDiff > 365) {
-                return 365; // After end date
-            } else {
-                return daysDiff + 1; // Day 1 is July 9, 2025
-            }
+            if (daysDiff < 0) return 0;
+            if (daysDiff >= totalDays) return totalDays;
+            return daysDiff + 1;
         }
 
-        function updateWidget() {
+        // Get current week
+        function getCurrentWeek() {
             const currentDay = getCurrentDay();
-            const progressPercent = (currentDay / 365) * 100;
-            const totalBurned = currentDay * dailyBurn;
-            const remaining = totalBudget - totalBurned;
+            return Math.ceil(currentDay / 7);
+        }
+
+        // Get today's date string
+        function getTodayString() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        // Update gym progress
+        function updateGymProgress() {
+            const currentDay = getCurrentDay();
+            const progressPercent = (currentDay / totalDays) * 100;
+            const totalSpent = currentDay * dailyBurn;
+            const remaining = gymBudget - totalSpent;
             
-            document.getElementById('progressBar').style.width = progressPercent + '%';
-            document.getElementById('currentDay').textContent = currentDay;
-            document.getElementById('totalBurned').textContent = '₹' + totalBurned.toFixed(2);
-            document.getElementById('remaining').textContent = '₹' + remaining.toFixed(2);
-            document.getElementById('dayInput').value = currentDay;
+            document.getElementById('gymProgress').style.width = progressPercent + '%';
+            document.getElementById('gymDay').textContent = currentDay;
+            document.getElementById('gymSpent').textContent = '₹' + Math.round(totalSpent);
+            document.getElementById('gymRemaining').textContent = '₹' + Math.round(remaining);
             
-            // Hide flame if budget is fully burned or not started
-            const flame = document.getElementById('flame');
-            if (currentDay >= 365 || currentDay === 0) {
+            // Show/hide flame
+            const flame = document.getElementById('gymFlame');
+            if (currentDay >= totalDays || currentDay === 0) {
                 flame.style.display = 'none';
             } else {
                 flame.style.display = 'block';
             }
         }
 
-        function nextDay() {
-            // For manual testing only - disabled for real-time mode
-            console.log('Manual controls disabled in real-time mode');
+        // Set mood for today
+        function setMood(mood) {
+            const today = getTodayString();
+            fitnessData.moods[today] = mood;
+            saveData();
+            updateMoodProgress();
+            
+            // Update button states
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelector(`.mood-btn.${mood}`).classList.add('selected');
         }
 
-        function prevDay() {
-            // For manual testing only - disabled for real-time mode
-            console.log('Manual controls disabled in real-time mode');
+        // Update mood progress
+        function updateMoodProgress() {
+            const moods = Object.values(fitnessData.moods);
+            const good = moods.filter(m => m === 'good').length;
+            const okay = moods.filter(m => m === 'okay').length;
+            const bad = moods.filter(m => m === 'bad').length;
+            const total = moods.length;
+            
+            document.getElementById('moodGood').textContent = good;
+            document.getElementById('moodOkay').textContent = okay;
+            document.getElementById('moodBad').textContent = bad;
+            
+            const progressPercent = total > 0 ? (total / getCurrentDay()) * 100 : 0;
+            document.getElementById('moodProgress').style.width = Math.min(progressPercent, 100) + '%';
+            
+            // Set today's mood button if exists
+            const today = getTodayString();
+            if (fitnessData.moods[today]) {
+                document.querySelectorAll('.mood-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                document.querySelector(`.mood-btn.${fitnessData.moods[today]}`).classList.add('selected');
+            }
         }
 
-        function goToDay() {
-            // For manual testing only - disabled for real-time mode
-            console.log('Manual controls disabled in real-time mode');
+        // Update weight
+        function updateWeight() {
+            const weight = parseFloat(document.getElementById('weightInput').value);
+            if (!weight || weight <= 0) return;
+            
+            const today = getTodayString();
+            fitnessData.weights[today] = weight;
+            if (!fitnessData.startWeight) {
+                fitnessData.startWeight = weight;
+            }
+            saveData();
+            updateWeightProgress();
+            document.getElementById('weightInput').value = '';
         }
 
-        function reset() {
-            // Just refresh the current day
-            updateWidget();
+        // Update weight progress
+        function updateWeightProgress() {
+            const currentWeek = getCurrentWeek();
+            const weights = Object.values(fitnessData.weights);
+            const currentWeight = weights.length > 0 ? weights[weights.length - 1] : null;
+            
+            document.getElementById('weightWeek').textContent = currentWeek;
+            document.getElementById('currentWeight').textContent = currentWeight ? currentWeight.toFixed(1) : '--';
+            
+            if (currentWeight && fitnessData.startWeight) {
+                const change = currentWeight - fitnessData.startWeight;
+                const changeText = change > 0 ? `+${change.toFixed(1)}` : change.toFixed(1);
+                document.getElementById('weightChange').textContent = changeText;
+            } else {
+                document.getElementById('weightChange').textContent = '--';
+            }
+            
+            const progressPercent = (currentWeek / 52) * 100;
+            document.getElementById('weightProgress').style.width = Math.min(progressPercent, 100) + '%';
         }
 
-        // Update every hour to ensure accuracy
-        setInterval(updateWidget, 3600000); // 1 hour = 3600000 milliseconds
+        // Update calories
+        function updateCalories() {
+            const calories = parseInt(document.getElementById('calorieInput').value);
+            if (!calories || calories <= 0) return;
+            
+            const today = getTodayString();
+            fitnessData.calories[today] = calories;
+            saveData();
+            updateCalorieProgress();
+            document.getElementById('calorieInput').value = '';
+        }
 
-        // Initialize
-        updateWidget();
+        // Update calorie progress
+        function updateCalorieProgress() {
+            const today = getTodayString();
+            const todayCalories = fitnessData.calories[today] || 0;
+            
+            document.getElementById('calorieActual').textContent = todayCalories;
+            const progressPercent = (todayCalories / calorieTarget) * 100;
+            document.getElementById('calorieStatus').textContent = Math.round(progressPercent) + '%';
+            document.getElementById('calorieProgress').style.width = Math.min(progressPercent, 100) + '%';
+        }
+
+        // Update workout
+        function updateWorkout() {
+            const checked = document.getElementById('workoutCheck').checked;
+            const today = getTodayString();
+            
+            if (checked) {
+                fitnessData.workouts[today] = true;
+            } else {
+                delete fitnessData.workouts[today];
+            }
+            
+            saveData();
+            updateWorkoutProgress();
+        }
+
+        // Update workout progress
+        function updateWorkoutProgress() {
+            const workouts = Object.values(fitnessData.workouts);
+            const completed = workouts.filter(w => w === true).length;
+            const currentDay = getCurrentDay();
+            const successRate = currentDay > 0 ? (completed / currentDay) * 100 : 0;
+            
+            // Calculate streak
+            let streak = 0;
+            const today = new Date();
+            for (let i = 0; i < currentDay; i++) {
+                const checkDate = new Date(today);
+                checkDate.setDate(checkDate.getDate() - i);
+                const dateString = checkDate.toISOString().split('T')[0];
+                
+                if (fitnessData.workouts[dateString]) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            
+            document.getElementById('workoutCompleted').textContent = completed;
+            document.getElementById('workoutStreak').textContent = streak;
+            document.getElementById('workoutPercent').textContent = Math.round(successRate) + '%';
+            
+            const progressPercent = (completed / getCurrentDay()) * 100;
+            document.getElementById('workoutProgress').style.width = Math.min(progressPercent, 100) + '%';
+            
+            // Set today's workout checkbox
+            const today = getTodayString();
+            document.getElementById('workoutCheck').checked = !!fitnessData.workouts[today];
+        }
+
+        // Update summary stats
+        function updateSummaryStats() {
+            const currentDay = getCurrentDay();
+            const overallProgress = (currentDay / totalDays) * 100;
+            
+            // Calculate motivation score based on various factors
+            let motivationScore = 60; // Base score
+            
+            // Mood contribution (max 20 points)
+            const moods = Object.values(fitnessData.moods);
+            const goodMoods = moods.filter(m => m === 'good').length;
+            const totalMoods = moods.length;
+            if (totalMoods > 0) {
+                motivationScore += (goodMoods / totalMoods) * 20;
+            }
+            
+            // Workout contribution (max 20 points)
+            const workouts = Object.values(fitnessData.workouts);
+            const completedWorkouts = workouts.filter(w => w === true).length;
+            if (currentDay > 0) {
+                motivationScore += (completedWorkouts / currentDay) * 20;
+            }
+            
+            document.getElementById('totalDays').textContent = currentDay;
+            document.getElementById('overallProgress').textContent = Math.round(overallProgress) + '%';
+            document.getElementById('motivationScore').textContent = Math.round(motivationScore);
+        }
+
+        // Initialize dashboard
+        function initDashboard() {
+            loadData();
+            updateGymProgress();
+            updateMoodProgress();
+            updateWeightProgress();
+            updateCalorieProgress();
+            updateWorkoutProgress();
+            updateSummaryStats();
+        }
+
+        // Update dashboard every hour
+        setInterval(initDashboard, 3600000);
+
+        // Initialize on load
+        initDashboard();
     </script>
 </body>
 </html>
